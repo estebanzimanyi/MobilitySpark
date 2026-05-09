@@ -10,7 +10,7 @@ https://creativecommons.org/licenses/by-sa/3.0/
 
 Quick reference for anyone reviewing open pull requests in **MobilitySpark** and its JMEOS dependency.
 Updated in the same commit as any PR that changes PR state or adds new branches.
-**Last updated: 2026-05-09 — 5 open PRs across MobilityDB/MobilitySpark + MobilityDB/JMEOS.**
+**Last updated: 2026-05-09 — 5 open PRs across MobilityDB/MobilitySpark + MobilityDB/JMEOS + 1 integration branch awaiting `gh pr create`.**
 
 ---
 
@@ -37,11 +37,19 @@ Updated in the same commit as any PR that changes PR state or adds new branches.
 
 ```
 MobilityDB/JMEOS
-  PR #11  fix/split-meos-library-interface  (split JNR-FFI interface → fixes ARM64/macOS)
-    └─► MobilityDB/MobilitySpark
-          PR #7   fix/license-main-java      (CI bootstrap — stacks on JMEOS #11 once merged)
-            └─► PR #5  feat/jmeos-1.3-berlinmod-poc  (JMEOS 1.3 + BerlinMOD + edge-to-cloud)
+  PR #9  JashanReel:fix-tests-using-docker    (multi-module Maven layout; needs cleanup review)
+    └─► estebanzimanyi:fix/multimodule-with-split-interface  (split JNR-FFI → ARM64/macOS fix)
+          [awaiting gh pr create — stacks on #9]
+          └─► MobilityDB/MobilitySpark
+                PR #7   fix/license-main-java  (CI bootstrap — stacks on JMEOS above)
+                  └─► PR #5  feat/jmeos-1.3-berlinmod-poc  (JMEOS 1.3 + BerlinMOD)
 ```
+
+**PR #11** (`estebanzimanyi:fix/split-meos-library-interface`) targeted the flat `src/` structure
+and is now superseded by `fix/multimodule-with-split-interface` (targets `jmeos-core/`). PR #11
+can be closed once the new integration branch is opened as a PR on MobilityDB/JMEOS.
+
+**PR #8** (`SachaDelsaux:JMEOS_v1.3`) is subsumed by PR #9 — recommended for closure (comment posted).
 
 **PR #6** (`ci/bootstrap-dev`) is superseded by PR #7 for CI purposes; close when #7 merges.
 **PR #2** (`doc/jmeos-1.3-bump-plan`) is a standalone tracking doc; can merge any time.
@@ -52,9 +60,15 @@ MobilityDB/JMEOS
 
 | PR | Branch | Description | CI | Notes |
 |----|--------|-------------|----|-------|
-| #11 | `estebanzimanyi:fix/split-meos-library-interface` | Split `MeosLibrary` JNR-FFI interface into 4 sub-interfaces (`public static`) to avoid `MethodTooLargeException` on ARM64 / Java 21 | ✅ | **Land first** — MobilitySpark depends on this fix |
-| #9 | `JashanReel:fix-tests-using-docker` | JMEOS 1.3 test fixes via Docker | ❓ | Independent of #11 |
-| #8 | `SachaDelsaux:JMEOS_v1.3` | JMEOS v1.3 upgrade | ❓ | Independent of #11 |
+| #9 | `JashanReel:fix-tests-using-docker` | Multi-module Maven layout (`jmeos-core/`); MEOS 1.3 API; test fixes | ❓ | **Land first** — needs cleanup (IDE files, binary blobs, *.class, squash 78 commits) |
+| #11 | `estebanzimanyi:fix/split-meos-library-interface` | Split for flat `src/` structure — superseded by `fix/multimodule-with-split-interface` | ✅ | Close after new PR opens |
+| #8 | `SachaDelsaux:JMEOS_v1.3` | JMEOS v1.3 upgrade — subsumed by #9 | ❓ | Recommended for closure (comment posted) |
+
+### estebanzimanyi/JMEOS — integration branch (awaiting `gh pr create`)
+
+| Branch | Description | Notes |
+|--------|-------------|-------|
+| `fix/multimodule-with-split-interface` | Split `MeosLibrary` 1685-method interface into 4 `public static` sub-interfaces for JNR-FFI; removes binary blobs + `.class` + debug files; updates `.gitignore` | Stacked on PR #9 tip; open as PR on MobilityDB/JMEOS after #9 is cleaned up |
 
 ---
 
