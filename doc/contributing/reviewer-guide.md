@@ -10,7 +10,7 @@ https://creativecommons.org/licenses/by-sa/3.0/
 
 Quick reference for anyone reviewing open pull requests in **MobilitySpark** and its JMEOS dependency.
 Updated in the same commit as any PR that changes PR state or adds new branches.
-**Last updated: 2026-05-09 — 5 open PRs across MobilityDB/MobilitySpark + MobilityDB/JMEOS (PRs #8, #9, #11, #12).**
+**Last updated: 2026-05-09 — 5 open PRs across MobilityDB/MobilitySpark + MobilityDB/JMEOS (PRs #8, #9, #11, #12). Fork PR #1 now at 181 UDFs / 203 tests.**
 
 ---
 
@@ -84,7 +84,7 @@ These PRs exist on the fork and are awaiting upstream review after the above cha
 
 | PR | Branch | Description | CI | Notes |
 |----|--------|-------------|----|-------|
-| #1 | `feat/udf-parity-phase2` | Expand UDF surface: 141 new UDFs in 7 classes + JMEOS-1.5 sub-interface fix; 57/57 tests | ✅ | Depends on JMEOS #11 being merged upstream |
+| #1 | `feat/udf-parity-phase2` | Expand UDF surface: 141 new UDFs in 7 classes + JMEOS-1.5 sub-interface fix; 203/203 tests | ✅ | Depends on JMEOS #11 being merged upstream |
 
 ### UDF breakdown for fork PR #1
 
