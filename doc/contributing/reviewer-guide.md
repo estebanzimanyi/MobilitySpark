@@ -6,9 +6,9 @@ Creative Commons Attribution-Share Alike 3.0 License
 https://creativecommons.org/licenses/by-sa/3.0/
 -->
 
-# PR Reviewer Guide — MobilitySpark & JMEOS
+# MobilitySpark PR Reviewer Guide
 
-Quick reference for anyone reviewing open pull requests across **MobilitySpark** and **JMEOS**.
+Quick reference for anyone reviewing open pull requests in **MobilitySpark** and its JMEOS dependency.
 Updated in the same commit as any PR that changes PR state or adds new branches.
 **Last updated: 2026-05-09 — 5 open PRs across MobilityDB/MobilitySpark + MobilityDB/JMEOS.**
 
