@@ -27,6 +27,7 @@ package org.mobilitydb.spark.temporal;
 
 import functions.functions;
 import jnr.ffi.Pointer;
+import jnr.ffi.Runtime;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.api.java.UDF1;
 import org.apache.spark.sql.types.DataTypes;
@@ -222,7 +223,9 @@ public final class ConstructorUDFs {
             if (s == null) return null;
             Pointer ptr = functions.stbox_in(s);
             if (ptr == null) return null;
-            return functions.stbox_as_hexwkb(ptr, (byte) 0, null);
+            // stbox_as_hexwkb requires a non-null size_out; allocate a scratch buffer
+            Pointer sizeOut = Runtime.getSystemRuntime().getMemoryManager().allocateDirect(8);
+            return functions.stbox_as_hexwkb(ptr, (byte) 0, sizeOut);
         };
 
     // tbox("TBOX T([2020-01-01,2020-01-02))") → hex-WKB
@@ -232,7 +235,9 @@ public final class ConstructorUDFs {
             if (s == null) return null;
             Pointer ptr = functions.tbox_in(s);
             if (ptr == null) return null;
-            return functions.tbox_as_hexwkb(ptr, (byte) 0, null);
+            // tbox_as_hexwkb requires a non-null size_out; allocate a scratch buffer
+            Pointer sizeOut = Runtime.getSystemRuntime().getMemoryManager().allocateDirect(8);
+            return functions.tbox_as_hexwkb(ptr, (byte) 0, sizeOut);
         };
 
     public static void registerAll(SparkSession spark) {
