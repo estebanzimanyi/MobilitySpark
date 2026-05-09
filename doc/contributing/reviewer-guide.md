@@ -10,7 +10,7 @@ https://creativecommons.org/licenses/by-sa/3.0/
 
 Quick reference for anyone reviewing open pull requests in **MobilitySpark** and its JMEOS dependency.
 Updated in the same commit as any PR that changes PR state or adds new branches.
-**Last updated: 2026-05-09 — 5 open PRs across MobilityDB/MobilitySpark + MobilityDB/JMEOS + 1 integration branch awaiting `gh pr create`.**
+**Last updated: 2026-05-09 — 5 open PRs across MobilityDB/MobilitySpark + MobilityDB/JMEOS (PRs #8, #9, #11, #12).**
 
 ---
 
@@ -38,8 +38,7 @@ Updated in the same commit as any PR that changes PR state or adds new branches.
 ```
 MobilityDB/JMEOS
   PR #9  JashanReel:fix-tests-using-docker    (multi-module Maven layout; needs cleanup review)
-    └─► estebanzimanyi:fix/multimodule-with-split-interface  (split JNR-FFI → ARM64/macOS fix)
-          [awaiting gh pr create — stacks on #9]
+    └─► PR #12  estebanzimanyi:fix/multimodule-with-split-interface  (split JNR-FFI → ARM64/macOS fix)
           └─► MobilityDB/MobilitySpark
                 PR #7   fix/license-main-java  (CI bootstrap — stacks on JMEOS above)
                   └─► PR #5  feat/jmeos-1.3-berlinmod-poc  (JMEOS 1.3 + BerlinMOD)
@@ -64,11 +63,7 @@ can be closed once the new integration branch is opened as a PR on MobilityDB/JM
 | #11 | `estebanzimanyi:fix/split-meos-library-interface` | Split for flat `src/` structure — superseded by `fix/multimodule-with-split-interface` | ✅ | Close after new PR opens |
 | #8 | `SachaDelsaux:JMEOS_v1.3` | JMEOS v1.3 upgrade — subsumed by #9 | ❓ | Recommended for closure (comment posted) |
 
-### estebanzimanyi/JMEOS — integration branch (awaiting `gh pr create`)
-
-| Branch | Description | Notes |
-|--------|-------------|-------|
-| `fix/multimodule-with-split-interface` | Split `MeosLibrary` 1685-method interface into 4 `public static` sub-interfaces for JNR-FFI; removes binary blobs + `.class` + debug files; updates `.gitignore` | Stacked on PR #9 tip; open as PR on MobilityDB/JMEOS after #9 is cleaned up |
+| #12 | `estebanzimanyi:fix/multimodule-with-split-interface` | Split `MeosLibrary` 1685-method interface into 4 `public static` sub-interfaces for JNR-FFI; removes binary blobs + `.class` + debug files; updates `.gitignore` | Stacked on PR #9; land after #9 is cleaned up |
 
 ---
 
