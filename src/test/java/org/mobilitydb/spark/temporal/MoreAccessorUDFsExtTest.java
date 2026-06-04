@@ -152,7 +152,7 @@ class MoreAccessorUDFsExtTest extends MeosTestBase {
     void ttextValueAtTimestamptz_at_start_returns_correct_value() throws Exception {
         String r = MoreAccessorUDFs.ttextValueAtTimestamptz.call(TTEXT_SEQ, TS_START);
         assertNotNull(r, "Value at start timestamp must be non-null");
-        assertEquals("hello", r, "ttext value at t0 must be hello");
+        assertEquals("\"hello\"", r, "ttext value at t0 must be \"hello\"");
     }
 
     @Test @Order(11)
