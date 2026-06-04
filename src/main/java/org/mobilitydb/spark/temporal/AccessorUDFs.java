@@ -292,6 +292,44 @@ public final class AccessorUDFs {
             return GeneratedFunctions.tint_max_value(ptr);
         };
 
+    // tbigint value accessors: tbigint values are int64, so the UDFs return BIGINT
+    // (Long), the canonical type-bearing names mirroring tintMinValue/tfloatMinValue.
+    public static final UDF1<String, Long> tbigintMinValue =
+        (trip) -> {
+            if (trip == null) return null;
+            MeosThread.ensureReady();
+            Pointer ptr = GeneratedFunctions.temporal_from_hexwkb(trip);
+            if (ptr == null) return null;
+            return GeneratedFunctions.tbigint_min_value(ptr);
+        };
+
+    public static final UDF1<String, Long> tbigintMaxValue =
+        (trip) -> {
+            if (trip == null) return null;
+            MeosThread.ensureReady();
+            Pointer ptr = GeneratedFunctions.temporal_from_hexwkb(trip);
+            if (ptr == null) return null;
+            return GeneratedFunctions.tbigint_max_value(ptr);
+        };
+
+    public static final UDF1<String, Long> tbigintStartValue =
+        (trip) -> {
+            if (trip == null) return null;
+            MeosThread.ensureReady();
+            Pointer ptr = GeneratedFunctions.temporal_from_hexwkb(trip);
+            if (ptr == null) return null;
+            return GeneratedFunctions.tbigint_start_value(ptr);
+        };
+
+    public static final UDF1<String, Long> tbigintEndValue =
+        (trip) -> {
+            if (trip == null) return null;
+            MeosThread.ensureReady();
+            Pointer ptr = GeneratedFunctions.temporal_from_hexwkb(trip);
+            if (ptr == null) return null;
+            return GeneratedFunctions.tbigint_end_value(ptr);
+        };
+
     // tboolStartValue(trip STRING) → BOOLEAN
     // MEOS: tbool_start_value(const Temporal *) → bool
     public static final UDF1<String, Boolean> tboolStartValue =
@@ -616,6 +654,10 @@ public final class AccessorUDFs {
         spark.udf().register("tintEndValue",      tintEndValue,     DataTypes.IntegerType);
         spark.udf().register("tintMinValue",      tintMinValue,     DataTypes.IntegerType);
         spark.udf().register("tintMaxValue",      tintMaxValue,     DataTypes.IntegerType);
+        spark.udf().register("tbigintStartValue", tbigintStartValue, DataTypes.LongType);
+        spark.udf().register("tbigintEndValue",   tbigintEndValue,   DataTypes.LongType);
+        spark.udf().register("tbigintMinValue",   tbigintMinValue,   DataTypes.LongType);
+        spark.udf().register("tbigintMaxValue",   tbigintMaxValue,   DataTypes.LongType);
         // Type-specific bool
         spark.udf().register("tboolStartValue",   tboolStartValue,  DataTypes.BooleanType);
         spark.udf().register("tboolEndValue",     tboolEndValue,    DataTypes.BooleanType);
