@@ -430,7 +430,6 @@ public final class CbufferUDFs {
     public static void registerAll(SparkSession spark) {
         // Base-type circular buffer
         spark.udf().register("cbuffer",            cbuffer,            DataTypes.StringType);
-        spark.udf().register("point",              point,              DataTypes.StringType);
         spark.udf().register("radius",             radius,             DataTypes.DoubleType);
         // Spatial relationships
         spark.udf().register("cbufferContains",    cbufferContains,    DataTypes.BooleanType);

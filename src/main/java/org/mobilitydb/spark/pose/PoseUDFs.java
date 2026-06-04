@@ -88,18 +88,32 @@ public final class PoseUDFs {
     // BerlinMOD-relevant ctor. The 3D ctor is reachable through poseFromText.
 
     // point(pose STRING) → STRING (geometry WKT) — MEOS: pose_to_point
+    // Bare point(pose|cbuffer): one canonical UDF dispatching the base type at
+    // runtime via the self-describing WKB type tag (meos_typeof_hexwkb), instead
+    // of two same-named registrations where one silently shadows the other.
     public static final UDF1<String, String> point =
-        (poseHex) -> {
-            if (poseHex == null) return null;
+        (hex) -> {
+            if (hex == null) return null;
             MeosThread.ensureReady();
-            Pointer p = MeosNative.INSTANCE.pose_from_hexwkb(poseHex);
-            if (p == null) return null;
+            int t = GeneratedFunctions.meos_typeof_hexwkb(hex);
+            Pointer src, g;
+            if (t == utils.meosCatalog.MeosEnums.meosType.T_POSE.getValue()) {
+                src = GeneratedFunctions.pose_from_hexwkb(hex);
+                if (src == null) return null;
+                g = GeneratedFunctions.pose_to_point(src);
+            } else if (t == utils.meosCatalog.MeosEnums.meosType.T_CBUFFER.getValue()) {
+                src = GeneratedFunctions.cbuffer_from_hexwkb(hex);
+                if (src == null) return null;
+                g = GeneratedFunctions.cbuffer_point(src);
+            } else {
+                return null;
+            }
             try {
-                Pointer g = MeosNative.INSTANCE.pose_to_point(p);
-                if (g == null) return null;
-                try { return GeneratedFunctions.geo_as_text(g, 15); }
-                finally { MeosMemory.free(g); }
-            } finally { MeosMemory.free(p); }
+                return g == null ? null : GeneratedFunctions.geo_as_text(g, 15);
+            } finally {
+                if (g != null) MeosMemory.free(g);
+                MeosMemory.free(src);
+            }
         };
 
     // rotation(pose STRING) → DOUBLE — MEOS: pose_rotation (2D rotation angle)
