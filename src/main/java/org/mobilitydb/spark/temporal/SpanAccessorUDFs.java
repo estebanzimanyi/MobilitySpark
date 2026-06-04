@@ -27,6 +27,7 @@ package org.mobilitydb.spark.temporal;
 
 import functions.GeneratedFunctions;
 import jnr.ffi.Pointer;
+import jnr.ffi.Runtime;
 import org.mobilitydb.spark.MeosMemory;
 import org.mobilitydb.spark.MeosThread;
 import org.apache.spark.sql.SparkSession;
@@ -379,7 +380,8 @@ public final class SpanAccessorUDFs {
             if (p == null) return null;
             try {
                 int n = GeneratedFunctions.set_num_values(p);
-                Pointer arr = GeneratedFunctions.intset_values(p);
+                Pointer countOut = Runtime.getSystemRuntime().getMemoryManager().allocateDirect(4);
+                Pointer arr = GeneratedFunctions.intset_values(p, countOut);
                 if (arr == null) return null;
                 try {
                     List<Integer> result = new ArrayList<>(n);
@@ -422,7 +424,8 @@ public final class SpanAccessorUDFs {
             if (p == null) return null;
             try {
                 int n = GeneratedFunctions.set_num_values(p);
-                Pointer arr = GeneratedFunctions.floatset_values(p);
+                Pointer countOut = Runtime.getSystemRuntime().getMemoryManager().allocateDirect(4);
+                Pointer arr = GeneratedFunctions.floatset_values(p, countOut);
                 if (arr == null) return null;
                 try {
                     List<Double> result = new ArrayList<>(n);
@@ -469,7 +472,8 @@ public final class SpanAccessorUDFs {
             if (p == null) return null;
             try {
                 int n = GeneratedFunctions.set_num_values(p);
-                Pointer arr = GeneratedFunctions.dateset_values(p);
+                Pointer countOut = Runtime.getSystemRuntime().getMemoryManager().allocateDirect(4);
+                Pointer arr = GeneratedFunctions.dateset_values(p, countOut);
                 if (arr == null) return null;
                 try {
                     List<java.sql.Date> result = new ArrayList<>(n);
@@ -515,7 +519,8 @@ public final class SpanAccessorUDFs {
             if (p == null) return null;
             try {
                 int n = GeneratedFunctions.set_num_values(p);
-                Pointer arr = GeneratedFunctions.tstzset_values(p);
+                Pointer countOut = Runtime.getSystemRuntime().getMemoryManager().allocateDirect(4);
+                Pointer arr = GeneratedFunctions.tstzset_values(p, countOut);
                 if (arr == null) return null;
                 try {
                     List<java.sql.Timestamp> result = new ArrayList<>(n);
@@ -567,7 +572,8 @@ public final class SpanAccessorUDFs {
             if (p == null) return null;
             try {
                 int n = GeneratedFunctions.set_num_values(p);
-                Pointer arr = GeneratedFunctions.textset_values(p);
+                Pointer countOut = Runtime.getSystemRuntime().getMemoryManager().allocateDirect(4);
+                Pointer arr = GeneratedFunctions.textset_values(p, countOut);
                 if (arr == null) return null;
                 try {
                     List<String> result = new ArrayList<>(n);
