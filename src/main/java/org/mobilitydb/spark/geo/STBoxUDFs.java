@@ -69,6 +69,63 @@ public final class STBoxUDFs {
         return GeneratedFunctions.stbox_from_hexwkb(hex);
     }
 
+    // Bare box-bound accessors: one UDF per bound, dispatching stbox vs tbox at
+    // runtime via the self-describing WKB type tag (meos_typeof_hexwkb). The
+    // canonical SQL names (Xmin/Tmin/...) are overloaded across stbox and tbox;
+    // both carry their MeosType in the WKB header, so no type-prefixed name is
+    // needed. Y/Z bounds exist only on stbox (tbox accessor is null).
+    private static Double boxBound(String hex,
+            java.util.function.Function<Pointer, Pointer> stboxAcc,
+            java.util.function.Function<Pointer, Pointer> tboxAcc) {
+        if (hex == null) return null;
+        MeosThread.ensureReady();
+        int t = GeneratedFunctions.meos_typeof_hexwkb(hex);
+        Pointer p, r;
+        if (t == utils.meosCatalog.MeosEnums.meosType.T_STBOX.getValue()) {
+            p = GeneratedFunctions.stbox_from_hexwkb(hex);
+            if (p == null) return null;
+            r = stboxAcc.apply(p);
+        } else if (tboxAcc != null && t == utils.meosCatalog.MeosEnums.meosType.T_TBOX.getValue()) {
+            p = GeneratedFunctions.tbox_from_hexwkb(hex);
+            if (p == null) return null;
+            r = tboxAcc.apply(p);
+        } else {
+            return null;
+        }
+        return r == null ? null : r.getDouble(0);
+    }
+
+    private static java.sql.Timestamp boxTime(String hex,
+            java.util.function.Function<Pointer, Pointer> stboxAcc,
+            java.util.function.Function<Pointer, Pointer> tboxAcc) {
+        if (hex == null) return null;
+        MeosThread.ensureReady();
+        int t = GeneratedFunctions.meos_typeof_hexwkb(hex);
+        Pointer p, r;
+        if (t == utils.meosCatalog.MeosEnums.meosType.T_STBOX.getValue()) {
+            p = GeneratedFunctions.stbox_from_hexwkb(hex);
+            if (p == null) return null;
+            r = stboxAcc.apply(p);
+        } else if (t == utils.meosCatalog.MeosEnums.meosType.T_TBOX.getValue()) {
+            p = GeneratedFunctions.tbox_from_hexwkb(hex);
+            if (p == null) return null;
+            r = tboxAcc.apply(p);
+        } else {
+            return null;
+        }
+        if (r == null) return null;
+        return new java.sql.Timestamp(r.getLong(0) / 1000L + TimeUtil.PG_UNIX_EPOCH_OFFSET_MS);
+    }
+
+    public static final UDF1<String, Double> Xmin = (hex) -> boxBound(hex, GeneratedFunctions::stbox_xmin, GeneratedFunctions::tbox_xmin);
+    public static final UDF1<String, Double> Xmax = (hex) -> boxBound(hex, GeneratedFunctions::stbox_xmax, GeneratedFunctions::tbox_xmax);
+    public static final UDF1<String, Double> Ymin = (hex) -> boxBound(hex, GeneratedFunctions::stbox_ymin, null);
+    public static final UDF1<String, Double> Ymax = (hex) -> boxBound(hex, GeneratedFunctions::stbox_ymax, null);
+    public static final UDF1<String, Double> Zmin = (hex) -> boxBound(hex, GeneratedFunctions::stbox_zmin, null);
+    public static final UDF1<String, Double> Zmax = (hex) -> boxBound(hex, GeneratedFunctions::stbox_zmax, null);
+    public static final UDF1<String, java.sql.Timestamp> Tmin = (hex) -> boxTime(hex, GeneratedFunctions::stbox_tmin, GeneratedFunctions::tbox_tmin);
+    public static final UDF1<String, java.sql.Timestamp> Tmax = (hex) -> boxTime(hex, GeneratedFunctions::stbox_tmax, GeneratedFunctions::tbox_tmax);
+
     // stbox_as_hexwkb requires a non-null size_out scratch Pointer
     private static String stboxHex(Pointer p) {
         if (p == null) return null;
@@ -469,14 +526,14 @@ public final class STBoxUDFs {
         spark.udf().register("stboxHasx",        stboxHasx,        DataTypes.BooleanType);
         spark.udf().register("stboxHast",        stboxHast,        DataTypes.BooleanType);
         spark.udf().register("stboxHasz",        stboxHasz,        DataTypes.BooleanType);
-        spark.udf().register("stboxXmin",        stboxXmin,        DataTypes.DoubleType);
-        spark.udf().register("stboxXmax",        stboxXmax,        DataTypes.DoubleType);
-        spark.udf().register("stboxYmin",        stboxYmin,        DataTypes.DoubleType);
-        spark.udf().register("stboxYmax",        stboxYmax,        DataTypes.DoubleType);
-        spark.udf().register("stboxZmin",        stboxZmin,        DataTypes.DoubleType);
-        spark.udf().register("stboxZmax",        stboxZmax,        DataTypes.DoubleType);
-        spark.udf().register("stboxTmin",        stboxTmin,        DataTypes.TimestampType);
-        spark.udf().register("stboxTmax",        stboxTmax,        DataTypes.TimestampType);
+        spark.udf().register("Xmin",             Xmin,             DataTypes.DoubleType);
+        spark.udf().register("Xmax",             Xmax,             DataTypes.DoubleType);
+        spark.udf().register("Ymin",             Ymin,             DataTypes.DoubleType);
+        spark.udf().register("Ymax",             Ymax,             DataTypes.DoubleType);
+        spark.udf().register("Zmin",             Zmin,             DataTypes.DoubleType);
+        spark.udf().register("Zmax",             Zmax,             DataTypes.DoubleType);
+        spark.udf().register("Tmin",             Tmin,             DataTypes.TimestampType);
+        spark.udf().register("Tmax",             Tmax,             DataTypes.TimestampType);
         spark.udf().register("stboxTminInc",     stboxTminInc,     DataTypes.BooleanType);
         spark.udf().register("stboxTmaxInc",     stboxTmaxInc,     DataTypes.BooleanType);
         spark.udf().register("stboxSrid",        stboxSrid,        DataTypes.IntegerType);

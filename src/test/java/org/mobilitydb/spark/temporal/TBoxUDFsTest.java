@@ -82,6 +82,14 @@ class TBoxUDFsTest extends MeosTestBase {
         assertEquals(1.0, xmin, 1e-9);
     }
 
+    @Test @Order(95)
+    void bareBoxAccessors_dispatch_tbox() throws Exception {
+        // the bare Xmin/Xmax/Tmin UDFs dispatch tbox via meos_typeof_hexwkb (stbox branch covered in STBoxUDFsTest)
+        assertEquals(1.0,  org.mobilitydb.spark.geo.STBoxUDFs.Xmin.call(TBOX_XT), 1e-9);
+        assertEquals(10.0, org.mobilitydb.spark.geo.STBoxUDFs.Xmax.call(TBOX_XT), 1e-9);
+        assertNotNull(org.mobilitydb.spark.geo.STBoxUDFs.Tmin.call(TBOX_XT));
+    }
+
     @Test @Order(5)
     void tboxXmax_returns_ten() throws Exception {
         Double xmax = TBoxUDFs.tboxXmax.call(TBOX_XT);

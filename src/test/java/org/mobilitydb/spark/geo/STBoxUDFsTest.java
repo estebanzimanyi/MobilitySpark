@@ -110,6 +110,15 @@ class STBoxUDFsTest extends MeosTestBase {
         assertNull(STBoxUDFs.stboxZmin.call(STBOX_XT));
     }
 
+    @Test @Order(95)
+    void bareBoxAccessors_dispatch_stbox() throws Exception {
+        // the bare Xmin/Xmax/Ymin/Tmin UDFs dispatch stbox vs tbox via meos_typeof_hexwkb
+        assertEquals(-1.0, STBoxUDFs.Xmin.call(STBOX_XT));
+        assertEquals(1.0,  STBoxUDFs.Xmax.call(STBOX_XT));
+        assertEquals(-2.0, STBoxUDFs.Ymin.call(STBOX_XT));
+        assertNotNull(STBoxUDFs.Tmin.call(STBOX_XT));
+    }
+
     @Test @Order(10)
     void stboxTmin_returns_2020_01_01() throws Exception {
         java.sql.Timestamp ts = STBoxUDFs.stboxTmin.call(STBOX_XT);

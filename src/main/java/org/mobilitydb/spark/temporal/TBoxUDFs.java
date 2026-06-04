@@ -497,12 +497,8 @@ public final class TBoxUDFs {
     public static void registerAll(SparkSession spark) {
         spark.udf().register("tboxHasx",        tboxHasx,        DataTypes.BooleanType);
         spark.udf().register("tboxHast",        tboxHast,        DataTypes.BooleanType);
-        spark.udf().register("tboxXmin",        tboxXmin,        DataTypes.DoubleType);
-        spark.udf().register("tboxXmax",        tboxXmax,        DataTypes.DoubleType);
         spark.udf().register("tboxXminInc",     tboxXminInc,     DataTypes.BooleanType);
         spark.udf().register("tboxXmaxInc",     tboxXmaxInc,     DataTypes.BooleanType);
-        spark.udf().register("tboxTmin",        tboxTmin,        DataTypes.TimestampType);
-        spark.udf().register("tboxTmax",        tboxTmax,        DataTypes.TimestampType);
         spark.udf().register("tboxTminInc",     tboxTminInc,     DataTypes.BooleanType);
         spark.udf().register("tboxTmaxInc",     tboxTmaxInc,     DataTypes.BooleanType);
         spark.udf().register("tboxToIntspan",   tboxToIntspan,   DataTypes.StringType);
