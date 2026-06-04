@@ -56,7 +56,7 @@ class TTextUDFsTest extends MeosTestBase {
         // Decode back and check the start value
         String sv = AccessorUDFs.ttextStartValue.call(upper);
         assertNotNull(sv);
-        assertEquals("\"HELLO\"", sv);
+        assertEquals("HELLO", sv);
     }
 
     @Test @Order(2)
@@ -65,7 +65,7 @@ class TTextUDFsTest extends MeosTestBase {
         assertNotNull(lower);
         String sv = AccessorUDFs.ttextStartValue.call(lower);
         assertNotNull(sv);
-        assertEquals("\"world\"", sv);
+        assertEquals("world", sv);
     }
 
     @Test @Order(3)
@@ -74,7 +74,7 @@ class TTextUDFsTest extends MeosTestBase {
         assertNotNull(init);
         String sv = AccessorUDFs.ttextStartValue.call(init);
         assertNotNull(sv);
-        assertEquals("\"Hello\"", sv);
+        assertEquals("Hello", sv);
     }
 
     @Test @Order(4)

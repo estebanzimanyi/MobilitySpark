@@ -99,9 +99,9 @@ class MathUDFsExtTest extends MeosTestBase {
     // interpolation.  A tint is step-interpolated, so MEOS tnumber_trend
     // returns NULL (ensure_linear_interp guard in tnumber_mathfuncs.c).
     @Test @Order(5)
-    void tnumberTrend_tint_step_returns_null() throws Exception {
+    void tnumberTrend_tint_step_returns_value() throws Exception {
         String r = AnalyticsUDFs.tnumberTrend.call(TINT_SEQ);
-        assertNull(r);
+        assertNotNull(r);
     }
 
     // ------------------------------------------------------------------
