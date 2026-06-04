@@ -421,17 +421,6 @@ public final class SpanAlgebraUDFs {
     // MEOS: union_set_set / intersection_set_set / minus_set_set → Set *
     // ------------------------------------------------------------------
 
-    // setUnion("{1,2,3}", "{4,5}") → "{1,2,3,4,5}"
-    public static final UDF2<String, String, String> setUnion =
-        (s1, s2) -> {
-            MeosThread.ensureReady();
-            Pointer p1 = setPtr(s1), p2 = setPtr(s2);
-            if (p1 == null || p2 == null) return null;
-            Pointer r = GeneratedFunctions.union_set_set(p1, p2);
-            if (r == null) return null;
-            return GeneratedFunctions.set_as_hexwkb(r, (byte) 0);
-        };
-
     // setIntersection("{1,2,3,4}", "{3,4,5}") → "{3,4}"
     public static final UDF2<String, String, String> setIntersection =
         (s1, s2) -> {
@@ -706,7 +695,6 @@ public final class SpanAlgebraUDFs {
         spark.udf().register("setContains",              setContains,              DataTypes.BooleanType);
         spark.udf().register("setOverlaps",              setOverlaps,              DataTypes.BooleanType);
         // Set algebra
-        spark.udf().register("setUnion",                 setUnion,                 DataTypes.StringType);
         spark.udf().register("setIntersection",          setIntersection,          DataTypes.StringType);
         spark.udf().register("setMinus",                 setMinus,                 DataTypes.StringType);
         // Span type conversions
