@@ -267,7 +267,7 @@ public final class ConstructorUDFs {
     //       tgeompoint_from_mfjson, tgeogpoint_from_mfjson  (meos_geo.h)
     // ------------------------------------------------------------------
 
-    public static final UDF1<String, String> tboolFromMfjson =
+    public static final UDF1<String, String> tboolFromMFJSON =
         (json) -> {
             if (json == null) return null;
             MeosThread.ensureReady();
@@ -276,7 +276,7 @@ public final class ConstructorUDFs {
             return GeneratedFunctions.temporal_as_hexwkb(p, (byte) 0);
         };
 
-    public static final UDF1<String, String> tintFromMfjson =
+    public static final UDF1<String, String> tintFromMFJSON =
         (json) -> {
             if (json == null) return null;
             MeosThread.ensureReady();
@@ -285,7 +285,7 @@ public final class ConstructorUDFs {
             return GeneratedFunctions.temporal_as_hexwkb(p, (byte) 0);
         };
 
-    public static final UDF1<String, String> tfloatFromMfjson =
+    public static final UDF1<String, String> tfloatFromMFJSON =
         (json) -> {
             if (json == null) return null;
             MeosThread.ensureReady();
@@ -294,7 +294,7 @@ public final class ConstructorUDFs {
             return GeneratedFunctions.temporal_as_hexwkb(p, (byte) 0);
         };
 
-    public static final UDF1<String, String> ttextFromMfjson =
+    public static final UDF1<String, String> ttextFromMFJSON =
         (json) -> {
             if (json == null) return null;
             MeosThread.ensureReady();
@@ -303,7 +303,7 @@ public final class ConstructorUDFs {
             return GeneratedFunctions.temporal_as_hexwkb(p, (byte) 0);
         };
 
-    public static final UDF1<String, String> tgeompointFromMfjson =
+    public static final UDF1<String, String> tgeompointFromMFJSON =
         (json) -> {
             if (json == null) return null;
             MeosThread.ensureReady();
@@ -312,7 +312,7 @@ public final class ConstructorUDFs {
             return GeneratedFunctions.temporal_as_hexwkb(p, (byte) 0);
         };
 
-    public static final UDF1<String, String> tgeogpointFromMfjson =
+    public static final UDF1<String, String> tgeogpointFromMFJSON =
         (json) -> {
             if (json == null) return null;
             MeosThread.ensureReady();
@@ -467,12 +467,10 @@ public final class ConstructorUDFs {
         spark.udf().register("bigintset",           bigintset,           DataTypes.StringType);
         spark.udf().register("stbox",               stbox,               DataTypes.StringType);
         spark.udf().register("tbox",                tbox,                DataTypes.StringType);
-        spark.udf().register("tboolFromMfjson",     tboolFromMfjson,     DataTypes.StringType);
-        spark.udf().register("tintFromMfjson",      tintFromMfjson,      DataTypes.StringType);
-        spark.udf().register("tfloatFromMfjson",    tfloatFromMfjson,    DataTypes.StringType);
-        spark.udf().register("ttextFromMfjson",     ttextFromMfjson,     DataTypes.StringType);
-        spark.udf().register("tgeompointFromMfjson",tgeompointFromMfjson,DataTypes.StringType);
-        spark.udf().register("tgeogpointFromMfjson",tgeogpointFromMfjson,DataTypes.StringType);
+        spark.udf().register("tboolFromMFJSON",     tboolFromMFJSON,     DataTypes.StringType);
+        spark.udf().register("tintFromMFJSON",      tintFromMFJSON,      DataTypes.StringType);
+        spark.udf().register("tfloatFromMFJSON",    tfloatFromMFJSON,    DataTypes.StringType);
+        spark.udf().register("ttextFromMFJSON",     ttextFromMFJSON,     DataTypes.StringType);
         // Constant temporal constructors
         spark.udf().register("tboolFromBaseTemp",   tboolFromBaseTemp,   DataTypes.StringType);
         spark.udf().register("tintFromBaseTemp",    tintFromBaseTemp,    DataTypes.StringType);

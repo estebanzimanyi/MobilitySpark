@@ -34,8 +34,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit tests for ConstructorUDFs MFJSON round-trip constructors:
- *   tboolFromMfjson, tintFromMfjson, tfloatFromMfjson, ttextFromMfjson,
- *   tgeompointFromMfjson, tgeogpointFromMfjson.
+ *   tboolFromMFJSON, tintFromMFJSON, tfloatFromMFJSON, ttextFromMFJSON,
+ *   tgeompointFromMFJSON, tgeogpointFromMFJSON.
  *
  * Each test converts a known temporal value to MFJSON then reconstructs it,
  * verifying that the round-trip produces a valid non-null hex-WKB.
@@ -76,104 +76,104 @@ class ConstructorUDFsExtTest extends MeosTestBase {
     }
 
     // ------------------------------------------------------------------
-    // tboolFromMfjson
+    // tboolFromMFJSON
     // ------------------------------------------------------------------
 
     @Test @Order(1)
     void tboolFromMfjson_round_trip_returns_nonnull() throws Exception {
         assertNotNull(TBOOL_MFJSON, "MFJSON source must be non-null");
-        String r = ConstructorUDFs.tboolFromMfjson.call(TBOOL_MFJSON);
+        String r = ConstructorUDFs.tboolFromMFJSON.call(TBOOL_MFJSON);
         assertNotNull(r);
         assertFalse(r.isBlank());
     }
 
     @Test @Order(2)
     void tboolFromMfjson_null_returns_null() throws Exception {
-        assertNull(ConstructorUDFs.tboolFromMfjson.call(null));
+        assertNull(ConstructorUDFs.tboolFromMFJSON.call(null));
     }
 
     // ------------------------------------------------------------------
-    // tintFromMfjson
+    // tintFromMFJSON
     // ------------------------------------------------------------------
 
     @Test @Order(3)
     void tintFromMfjson_round_trip_returns_nonnull() throws Exception {
         assertNotNull(TINT_MFJSON, "MFJSON source must be non-null");
-        String r = ConstructorUDFs.tintFromMfjson.call(TINT_MFJSON);
+        String r = ConstructorUDFs.tintFromMFJSON.call(TINT_MFJSON);
         assertNotNull(r);
         assertFalse(r.isBlank());
     }
 
     @Test @Order(4)
     void tintFromMfjson_null_returns_null() throws Exception {
-        assertNull(ConstructorUDFs.tintFromMfjson.call(null));
+        assertNull(ConstructorUDFs.tintFromMFJSON.call(null));
     }
 
     // ------------------------------------------------------------------
-    // tfloatFromMfjson
+    // tfloatFromMFJSON
     // ------------------------------------------------------------------
 
     @Test @Order(5)
     void tfloatFromMfjson_round_trip_returns_nonnull() throws Exception {
         assertNotNull(TFLOAT_MFJSON, "MFJSON source must be non-null");
-        String r = ConstructorUDFs.tfloatFromMfjson.call(TFLOAT_MFJSON);
+        String r = ConstructorUDFs.tfloatFromMFJSON.call(TFLOAT_MFJSON);
         assertNotNull(r);
         assertFalse(r.isBlank());
     }
 
     @Test @Order(6)
     void tfloatFromMfjson_null_returns_null() throws Exception {
-        assertNull(ConstructorUDFs.tfloatFromMfjson.call(null));
+        assertNull(ConstructorUDFs.tfloatFromMFJSON.call(null));
     }
 
     // ------------------------------------------------------------------
-    // ttextFromMfjson
+    // ttextFromMFJSON
     // ------------------------------------------------------------------
 
     @Test @Order(7)
     void ttextFromMfjson_round_trip_returns_nonnull() throws Exception {
         assertNotNull(TTEXT_MFJSON, "MFJSON source must be non-null");
-        String r = ConstructorUDFs.ttextFromMfjson.call(TTEXT_MFJSON);
+        String r = ConstructorUDFs.ttextFromMFJSON.call(TTEXT_MFJSON);
         assertNotNull(r);
         assertFalse(r.isBlank());
     }
 
     @Test @Order(8)
     void ttextFromMfjson_null_returns_null() throws Exception {
-        assertNull(ConstructorUDFs.ttextFromMfjson.call(null));
+        assertNull(ConstructorUDFs.ttextFromMFJSON.call(null));
     }
 
     // ------------------------------------------------------------------
-    // tgeompointFromMfjson
+    // tgeompointFromMFJSON
     // ------------------------------------------------------------------
 
     @Test @Order(9)
     void tgeompointFromMfjson_round_trip_returns_nonnull() throws Exception {
         assertNotNull(TGEOMPOINT_MFJSON, "MFJSON source must be non-null");
-        String r = ConstructorUDFs.tgeompointFromMfjson.call(TGEOMPOINT_MFJSON);
+        String r = ConstructorUDFs.tgeompointFromMFJSON.call(TGEOMPOINT_MFJSON);
         assertNotNull(r);
         assertFalse(r.isBlank());
     }
 
     @Test @Order(10)
     void tgeompointFromMfjson_null_returns_null() throws Exception {
-        assertNull(ConstructorUDFs.tgeompointFromMfjson.call(null));
+        assertNull(ConstructorUDFs.tgeompointFromMFJSON.call(null));
     }
 
     // ------------------------------------------------------------------
-    // tgeogpointFromMfjson
+    // tgeogpointFromMFJSON
     // ------------------------------------------------------------------
 
     @Test @Order(11)
     void tgeogpointFromMfjson_round_trip_returns_nonnull() throws Exception {
         assertNotNull(TGEOGPOINT_MFJSON, "MFJSON source must be non-null");
-        String r = ConstructorUDFs.tgeogpointFromMfjson.call(TGEOGPOINT_MFJSON);
+        String r = ConstructorUDFs.tgeogpointFromMFJSON.call(TGEOGPOINT_MFJSON);
         assertNotNull(r);
         assertFalse(r.isBlank());
     }
 
     @Test @Order(12)
     void tgeogpointFromMfjson_null_returns_null() throws Exception {
-        assertNull(ConstructorUDFs.tgeogpointFromMfjson.call(null));
+        assertNull(ConstructorUDFs.tgeogpointFromMFJSON.call(null));
     }
 }

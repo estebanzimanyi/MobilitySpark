@@ -255,7 +255,7 @@ public final class TemporalUDFs {
     //       flags=0 → WKT geometry (not EWKT), precision controls decimal places
     // ------------------------------------------------------------------
 
-    public static final UDF2<String, Integer, String> temporalAsMfjson =
+    public static final UDF2<String, Integer, String> asMFJSON =
         (trip, precision) -> {
             if (trip == null) return null;
             MeosThread.ensureReady();
@@ -337,7 +337,7 @@ public final class TemporalUDFs {
         spark.udf().register("speed",             speed,             DataTypes.StringType);
         spark.udf().register("atGeometry",        atGeometry,        DataTypes.StringType);
         spark.udf().register("asHexWKB",          asHexWKB,          DataTypes.StringType);
-        spark.udf().register("temporalAsMfjson",  temporalAsMfjson,  DataTypes.StringType);
+        spark.udf().register("asMFJSON",  asMFJSON,  DataTypes.StringType);
         spark.udf().register("tboolOut",          tboolOut,          DataTypes.StringType);
         spark.udf().register("tintOut",           tintOut,           DataTypes.StringType);
         spark.udf().register("tfloatOut",         tfloatOut,         DataTypes.StringType);

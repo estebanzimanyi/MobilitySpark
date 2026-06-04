@@ -254,7 +254,7 @@ public final class AnalyticsUDFs {
             }
         };
 
-    public static final UDF1<String, String> tpointAzimuth =
+    public static final UDF1<String, String> azimuth =
         (s) -> {
             if (s == null) return null;
             MeosThread.ensureReady();
@@ -348,7 +348,7 @@ public final class AnalyticsUDFs {
         spark.udf().register("tnumberTrend",      tnumberTrend,     DataTypes.StringType);
         spark.udf().register("tpointLength",      tpointLength,     DataTypes.DoubleType);
         spark.udf().register("tpointSpeed",       tpointSpeed,      DataTypes.StringType);
-        spark.udf().register("tpointAzimuth",          tpointAzimuth,          DataTypes.StringType);
+        spark.udf().register("azimuth",          azimuth,          DataTypes.StringType);
         spark.udf().register("tpointDirection",         tpointDirection,         DataTypes.StringType);
         spark.udf().register("tpointCumulativeLength",  tpointCumulativeLength,  DataTypes.StringType);
         spark.udf().register("tgeoTraversedArea",       tgeoTraversedArea,       DataTypes.StringType);

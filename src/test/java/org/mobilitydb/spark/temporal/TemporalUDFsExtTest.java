@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit tests for TemporalUDFs MFJSON output and text-output UDFs:
- *   temporalAsMfjson, tboolOut, tintOut, tfloatOut, ttextOut.
+ *   asMFJSON, tboolOut, tintOut, tfloatOut, ttextOut.
  *
  * MEOS function authority: meos/include/meos.h
  */
@@ -58,12 +58,12 @@ class TemporalUDFsExtTest extends MeosTestBase {
     }
 
     // ------------------------------------------------------------------
-    // temporalAsMfjson
+    // asMFJSON
     // ------------------------------------------------------------------
 
     @Test @Order(1)
     void temporalAsMfjson_returns_json_string() throws Exception {
-        String r = TemporalUDFs.temporalAsMfjson.call(TRIP_HEX, 6);
+        String r = TemporalUDFs.asMFJSON.call(TRIP_HEX, 6);
         assertNotNull(r);
         assertFalse(r.isBlank());
         assertTrue(r.contains("\"type\""), "MFJSON output must be a JSON object");
@@ -71,14 +71,14 @@ class TemporalUDFsExtTest extends MeosTestBase {
 
     @Test @Order(2)
     void temporalAsMfjson_null_precision_uses_default() throws Exception {
-        String r = TemporalUDFs.temporalAsMfjson.call(TRIP_HEX, null);
+        String r = TemporalUDFs.asMFJSON.call(TRIP_HEX, null);
         assertNotNull(r);
         assertFalse(r.isBlank());
     }
 
     @Test @Order(3)
     void temporalAsMfjson_null_trip_returns_null() throws Exception {
-        assertNull(TemporalUDFs.temporalAsMfjson.call(null, 6));
+        assertNull(TemporalUDFs.asMFJSON.call(null, 6));
     }
 
     // ------------------------------------------------------------------
