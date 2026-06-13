@@ -2,132 +2,179 @@
 package org.mobilitydb.spark.generated;
 
 import functions.GeneratedFunctions;
-import jnr.ffi.Pointer;
-import jnr.ffi.Runtime;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.api.java.*;
 import org.apache.spark.sql.types.DataTypes;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import org.mobilitydb.spark.MeosMemory;
 import org.mobilitydb.spark.MeosThread;
 
 public final class GeneratedSpatioTemporalUDFs {
     private GeneratedSpatioTemporalUDFs() {}
 
-    private static final DateTimeFormatter PG_FMT =
-        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
-    private static OffsetDateTime parseTs(Object arg) {
-        if (arg instanceof java.sql.Timestamp)
-            return GeneratedFunctions.pg_timestamptz_in(
-                ((java.sql.Timestamp) arg).toInstant().atOffset(ZoneOffset.UTC).format(PG_FMT), -1);
-        return GeneratedFunctions.pg_timestamptz_in(arg.toString().trim(), -1);
-    }
-
-    private static Pointer szbuf() {
-        return Runtime.getSystemRuntime().getMemoryManager().allocateDirect(8);
-    }
-
-    // ── runtime MEOS-type classification for generated dispatch ──
-    // The value's type is decided by MEOS, not by semantic guessing: a leading
-    // '[' / '(' is a span; a date-like string is a timestamp; a hex-WKB body is
-    // parsed as a temporal and falls back to an stbox; anything else is geometry.
-    static final int K_NONE = -1, K_SPAN = 0, K_TEMPORAL = 1, K_STBOX = 2, K_GEO = 3, K_TS = 4;
-
-    static final class Op { int kind = K_NONE; Pointer ptr; OffsetDateTime ts; }
-
-    private static boolean isHex(String s) {
-        for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
-            if (!((c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f'))) return false;
-        }
-        return s.length() > 0;
-    }
-
-    static Op classify(String s) {
-        Op o = new Op();
-        if (s == null || s.isEmpty()) return o;
-        char c = s.charAt(0);
-        // Unambiguous by leading token: spans/stboxes/geometries travel as TEXT,
-        // ONLY temporals travel as hex-WKB — so temporal_from_hexwkb is never fed a
-        // non-temporal (which could misread a size field and over-allocate).
-        if (c == '[' || c == '(') { o.kind = K_SPAN; o.ptr = GeneratedFunctions.tstzspan_in(s); return o; }
-        if (s.regionMatches(true, 0, "STBOX", 0, 5)) { o.kind = K_STBOX; o.ptr = GeneratedFunctions.stbox_in(s); return o; }
-        if (c >= '0' && c <= '9' && s.indexOf('-') > 0) { o.kind = K_TS; o.ts = parseTs(s); return o; }
-        if (isHex(s)) { o.kind = K_TEMPORAL; o.ptr = GeneratedFunctions.temporal_from_hexwkb(s); return o; }
-        o.kind = K_GEO; o.ptr = GeneratedFunctions.geo_from_text(s, 0);
-        return o;
-    }
-
-    static Op classifyObj(Object a) {
-        if (a instanceof java.sql.Timestamp) { Op o = new Op(); o.kind = K_TS; o.ts = parseTs(a); return o; }
-        return classify(a == null ? null : a.toString());
-    }
-
-    private static void freeOp(Op o) { if (o != null && o.ptr != null) MeosMemory.free(o.ptr); }
-
-    public static final UDF1<String, String> whenTrue = (temp) -> {
-        if (temp == null) return null;
-        MeosThread.ensureReady();
-        Pointer p_temp = GeneratedFunctions.temporal_from_hexwkb(temp);
-        if (p_temp == null) return null;
-        try {
-            Pointer _r = GeneratedFunctions.tbool_when_true(p_temp);
-            if (_r == null) return null;
-            try { return GeneratedFunctions.spanset_out(_r, 15); } finally { MeosMemory.free(_r); }
-        } finally {
-            MeosMemory.free(p_temp);
-        }
-    };
-    public static final UDF2<String, String, Boolean> overlaps = (x0, x1) -> {
-        if (x0 == null || x1 == null) return null;
-        MeosThread.ensureReady();
-        Op o_x0 = classify(x0);
-        Op o_x1 = classify(x1);
-        try {
-            if (o_x0.kind == K_SPAN && o_x1.kind == K_SPAN && o_x0.ptr != null && o_x1.ptr != null) return GeneratedFunctions.overlaps_span_span(o_x0.ptr, o_x1.ptr);
-            if (o_x0.kind == K_STBOX && o_x1.kind == K_STBOX && o_x0.ptr != null && o_x1.ptr != null) return GeneratedFunctions.overlaps_stbox_stbox(o_x0.ptr, o_x1.ptr);
-            if (o_x0.kind == K_STBOX && o_x1.kind == K_TEMPORAL && o_x0.ptr != null && o_x1.ptr != null) return GeneratedFunctions.overlaps_stbox_tspatial(o_x0.ptr, o_x1.ptr);
-            if (o_x0.kind == K_TEMPORAL && o_x1.kind == K_STBOX && o_x0.ptr != null && o_x1.ptr != null) return GeneratedFunctions.overlaps_tspatial_stbox(o_x0.ptr, o_x1.ptr);
-            return null;
-        } finally {
-            freeOp(o_x0);
-            freeOp(o_x1);
-        }
-    };
-    public static final UDF2<String, Object, String> stbox = (x0, x1) -> {
-        if (x0 == null || x1 == null) return null;
-        MeosThread.ensureReady();
-        Op o_x0 = classify(x0);
-        Op o_x1 = classifyObj(x1);
-        try {
-            if (o_x0.kind == K_GEO && o_x1.kind == K_TS && o_x0.ptr != null && o_x1.ts != null) { Pointer _r = GeneratedFunctions.geo_timestamptz_to_stbox(o_x0.ptr, o_x1.ts); try { return _r==null?null:GeneratedFunctions.stbox_out(_r, 15); } finally { MeosMemory.free(_r); } }
-            if (o_x0.kind == K_GEO && o_x1.kind == K_SPAN && o_x0.ptr != null && o_x1.ptr != null) { Pointer _r = GeneratedFunctions.geo_tstzspan_to_stbox(o_x0.ptr, o_x1.ptr); try { return _r==null?null:GeneratedFunctions.stbox_out(_r, 15); } finally { MeosMemory.free(_r); } }
-            return null;
-        } finally {
-            freeOp(o_x0);
-            freeOp(o_x1);
-        }
-    };
-    public static final UDF1<String, String> timeSpan = (x0) -> {
-        if (x0 == null) return null;
-        MeosThread.ensureReady();
-        Op o_x0 = classify(x0);
-        try {
-            if (o_x0.kind == K_TEMPORAL && o_x0.ptr != null) { Pointer _r = GeneratedFunctions.temporal_to_tstzspan(o_x0.ptr); try { return _r==null?null:GeneratedFunctions.span_out(_r, 15); } finally { MeosMemory.free(_r); } }
-            if (o_x0.kind == K_STBOX && o_x0.ptr != null) { Pointer _r = GeneratedFunctions.stbox_to_tstzspan(o_x0.ptr); try { return _r==null?null:GeneratedFunctions.span_out(_r, 15); } finally { MeosMemory.free(_r); } }
-            return null;
-        } finally {
-            freeOp(o_x0);
-        }
-    };
-
     public static void registerAll(SparkSession spark) {
-        spark.udf().register("whenTrue", whenTrue, DataTypes.StringType);
-        spark.udf().register("overlaps", overlaps, DataTypes.BooleanType);
-        spark.udf().register("stbox", stbox, DataTypes.StringType);
-        spark.udf().register("timeSpan", timeSpan, DataTypes.StringType);
+        GeneratedUdfs_base_types.register(spark);
+        GeneratedUdfs_box_accessor.register(spark);
+        GeneratedUdfs_box_bbox_pos.register(spark);
+        GeneratedUdfs_box_bbox_topo.register(spark);
+        GeneratedUdfs_box_comp.register(spark);
+        GeneratedUdfs_box_constructor.register(spark);
+        GeneratedUdfs_box_conversion.register(spark);
+        GeneratedUdfs_box_inout.register(spark);
+        GeneratedUdfs_box_set.register(spark);
+        GeneratedUdfs_box_transf.register(spark);
+        GeneratedUdfs_cbuffer_accessor.register(spark);
+        GeneratedUdfs_cbuffer_base_accessor.register(spark);
+        GeneratedUdfs_cbuffer_base_comp.register(spark);
+        GeneratedUdfs_cbuffer_base_constructor.register(spark);
+        GeneratedUdfs_cbuffer_base_conversion.register(spark);
+        GeneratedUdfs_cbuffer_base_dist.register(spark);
+        GeneratedUdfs_cbuffer_base_inout.register(spark);
+        GeneratedUdfs_cbuffer_base_rel.register(spark);
+        GeneratedUdfs_cbuffer_base_srid.register(spark);
+        GeneratedUdfs_cbuffer_base_transf.register(spark);
+        GeneratedUdfs_cbuffer_box.register(spark);
+        GeneratedUdfs_cbuffer_comp_ever.register(spark);
+        GeneratedUdfs_cbuffer_comp_temp.register(spark);
+        GeneratedUdfs_cbuffer_constructor.register(spark);
+        GeneratedUdfs_cbuffer_conversion.register(spark);
+        GeneratedUdfs_cbuffer_dist.register(spark);
+        GeneratedUdfs_cbuffer_rel_ever.register(spark);
+        GeneratedUdfs_cbuffer_rel_temp.register(spark);
+        GeneratedUdfs_cbuffer_restrict.register(spark);
+        GeneratedUdfs_cbuffer_set_accessor.register(spark);
+        GeneratedUdfs_cbuffer_set_conversion.register(spark);
+        GeneratedUdfs_cbuffer_set_inout.register(spark);
+        GeneratedUdfs_cbuffer_set_setops.register(spark);
+        GeneratedUdfs_cbuffer_transf.register(spark);
+        GeneratedUdfs_geo_accessor.register(spark);
+        GeneratedUdfs_geo_agg.register(spark);
+        GeneratedUdfs_geo_base_accessor.register(spark);
+        GeneratedUdfs_geo_base_comp.register(spark);
+        GeneratedUdfs_geo_base_constructor.register(spark);
+        GeneratedUdfs_geo_base_conversion.register(spark);
+        GeneratedUdfs_geo_base_distance.register(spark);
+        GeneratedUdfs_geo_base_inout.register(spark);
+        GeneratedUdfs_geo_base_rel.register(spark);
+        GeneratedUdfs_geo_base_spatial.register(spark);
+        GeneratedUdfs_geo_base_srid.register(spark);
+        GeneratedUdfs_geo_base_transf.register(spark);
+        GeneratedUdfs_geo_bbox_pos.register(spark);
+        GeneratedUdfs_geo_bbox_topo.register(spark);
+        GeneratedUdfs_geo_box_accessor.register(spark);
+        GeneratedUdfs_geo_box_comp.register(spark);
+        GeneratedUdfs_geo_box_constructor.register(spark);
+        GeneratedUdfs_geo_box_conversion.register(spark);
+        GeneratedUdfs_geo_box_inout.register(spark);
+        GeneratedUdfs_geo_box_pos.register(spark);
+        GeneratedUdfs_geo_box_set.register(spark);
+        GeneratedUdfs_geo_box_srid.register(spark);
+        GeneratedUdfs_geo_box_topo.register(spark);
+        GeneratedUdfs_geo_box_transf.register(spark);
+        GeneratedUdfs_geo_comp_ever.register(spark);
+        GeneratedUdfs_geo_comp_temp.register(spark);
+        GeneratedUdfs_geo_constructor.register(spark);
+        GeneratedUdfs_geo_conversion.register(spark);
+        GeneratedUdfs_geo_distance.register(spark);
+        GeneratedUdfs_geo_inout.register(spark);
+        GeneratedUdfs_geo_rel_ever.register(spark);
+        GeneratedUdfs_geo_rel_temp.register(spark);
+        GeneratedUdfs_geo_restrict.register(spark);
+        GeneratedUdfs_geo_set_accessor.register(spark);
+        GeneratedUdfs_geo_set_conversion.register(spark);
+        GeneratedUdfs_geo_set_inout.register(spark);
+        GeneratedUdfs_geo_set_setops.register(spark);
+        GeneratedUdfs_geo_set_srid.register(spark);
+        GeneratedUdfs_geo_srid.register(spark);
+        GeneratedUdfs_geo_tile.register(spark);
+        GeneratedUdfs_geo_transf.register(spark);
+        GeneratedUdfs_misc.register(spark);
+        GeneratedUdfs_npoint_accessor.register(spark);
+        GeneratedUdfs_npoint_base_accessor.register(spark);
+        GeneratedUdfs_npoint_base_bbox.register(spark);
+        GeneratedUdfs_npoint_base_comp.register(spark);
+        GeneratedUdfs_npoint_base_constructor.register(spark);
+        GeneratedUdfs_npoint_base_conversion.register(spark);
+        GeneratedUdfs_npoint_base_inout.register(spark);
+        GeneratedUdfs_npoint_base_route.register(spark);
+        GeneratedUdfs_npoint_base_srid.register(spark);
+        GeneratedUdfs_npoint_base_transf.register(spark);
+        GeneratedUdfs_npoint_comp_ever.register(spark);
+        GeneratedUdfs_npoint_comp_temp.register(spark);
+        GeneratedUdfs_npoint_constructor.register(spark);
+        GeneratedUdfs_npoint_conversion.register(spark);
+        GeneratedUdfs_npoint_dist.register(spark);
+        GeneratedUdfs_npoint_inout.register(spark);
+        GeneratedUdfs_npoint_restrict.register(spark);
+        GeneratedUdfs_npoint_set_accessor.register(spark);
+        GeneratedUdfs_npoint_set_conversion.register(spark);
+        GeneratedUdfs_npoint_set_inout.register(spark);
+        GeneratedUdfs_npoint_set_setops.register(spark);
+        GeneratedUdfs_pose_accessor.register(spark);
+        GeneratedUdfs_pose_base_accessor.register(spark);
+        GeneratedUdfs_pose_base_bbox.register(spark);
+        GeneratedUdfs_pose_base_comp.register(spark);
+        GeneratedUdfs_pose_base_constructor.register(spark);
+        GeneratedUdfs_pose_base_conversion.register(spark);
+        GeneratedUdfs_pose_base_dist.register(spark);
+        GeneratedUdfs_pose_base_inout.register(spark);
+        GeneratedUdfs_pose_base_srid.register(spark);
+        GeneratedUdfs_pose_base_transf.register(spark);
+        GeneratedUdfs_pose_comp_ever.register(spark);
+        GeneratedUdfs_pose_comp_temp.register(spark);
+        GeneratedUdfs_pose_conversion.register(spark);
+        GeneratedUdfs_pose_distance.register(spark);
+        GeneratedUdfs_pose_restrict.register(spark);
+        GeneratedUdfs_pose_set_accessor.register(spark);
+        GeneratedUdfs_pose_set_conversion.register(spark);
+        GeneratedUdfs_pose_set_inout.register(spark);
+        GeneratedUdfs_pose_set_setops.register(spark);
+        GeneratedUdfs_rgeo_accessor.register(spark);
+        GeneratedUdfs_rgeo_comp_ever.register(spark);
+        GeneratedUdfs_rgeo_comp_temp.register(spark);
+        GeneratedUdfs_rgeo_constructor.register(spark);
+        GeneratedUdfs_rgeo_conversion.register(spark);
+        GeneratedUdfs_rgeo_dist.register(spark);
+        GeneratedUdfs_rgeo_inout.register(spark);
+        GeneratedUdfs_rgeo_modif.register(spark);
+        GeneratedUdfs_rgeo_rel_ever.register(spark);
+        GeneratedUdfs_rgeo_restrict.register(spark);
+        GeneratedUdfs_rgeo_transf.register(spark);
+        GeneratedUdfs_setspan_accessor.register(spark);
+        GeneratedUdfs_setspan_agg.register(spark);
+        GeneratedUdfs_setspan_bin.register(spark);
+        GeneratedUdfs_setspan_comp.register(spark);
+        GeneratedUdfs_setspan_constructor.register(spark);
+        GeneratedUdfs_setspan_conversion.register(spark);
+        GeneratedUdfs_setspan_dist.register(spark);
+        GeneratedUdfs_setspan_inout.register(spark);
+        GeneratedUdfs_setspan_pos_0.register(spark);
+        GeneratedUdfs_setspan_pos_1.register(spark);
+        GeneratedUdfs_setspan_set.register(spark);
+        GeneratedUdfs_setspan_topo.register(spark);
+        GeneratedUdfs_setspan_transf.register(spark);
+        GeneratedUdfs_temporal_accessor.register(spark);
+        GeneratedUdfs_temporal_agg.register(spark);
+        GeneratedUdfs_temporal_analytics_similarity.register(spark);
+        GeneratedUdfs_temporal_analytics_simplify.register(spark);
+        GeneratedUdfs_temporal_bbox_pos.register(spark);
+        GeneratedUdfs_temporal_bbox_topo.register(spark);
+        GeneratedUdfs_temporal_bool.register(spark);
+        GeneratedUdfs_temporal_comp_ever.register(spark);
+        GeneratedUdfs_temporal_comp_temp.register(spark);
+        GeneratedUdfs_temporal_comp_trad.register(spark);
+        GeneratedUdfs_temporal_constructor.register(spark);
+        GeneratedUdfs_temporal_conversion.register(spark);
+        GeneratedUdfs_temporal_dist.register(spark);
+        GeneratedUdfs_temporal_inout.register(spark);
+        GeneratedUdfs_temporal_math.register(spark);
+        GeneratedUdfs_temporal_modif.register(spark);
+        GeneratedUdfs_temporal_restrict.register(spark);
+        GeneratedUdfs_temporal_spatial_rel_ever.register(spark);
+        GeneratedUdfs_temporal_text.register(spark);
+        GeneratedUdfs_temporal_transf.register(spark);
+        GeneratedUdfs_ungrouped_0.register(spark);
+        GeneratedUdfs_ungrouped_1.register(spark);
+        GeneratedUdfs_ungrouped_2.register(spark);
+        GeneratedUdfs_ungrouped_3.register(spark);
     }
 }
